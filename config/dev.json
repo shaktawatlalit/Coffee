@@ -1,0 +1,14 @@
+{
+	"port":9001,
+	"host":"127.0.0.1",
+	"Mongo": {
+		"databaseHost":"localhost",
+		"port": 27017,
+		"databaseName":"coffee_data"
+	},
+	"JWT": {
+		"SecretKey": "CoffeeAssignement",
+		"Expire":"20m"
+	}
+
+}

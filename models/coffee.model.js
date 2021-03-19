@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const CoffeeSchema = new Schema({
     name: {type: String, required: true},
     coffeeType: {type: String, required: true},
-    price: {type: String, required: true},
+    price: {type: Number, required: true},
     size: {type: String, required: true}
 })
 

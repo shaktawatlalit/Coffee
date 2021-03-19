@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
-const accessTokenSecret = 'youraccesstokensecret';
+const accessTokenSecret = config["JWT"]["SecretKey"];
+const Exception = require('../lib/exception');
+const Response = require('../lib/Response');
+
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
@@ -8,24 +11,15 @@ const authenticateJWT = (req, res, next) => {
 
         jwt.verify(token, accessTokenSecret, (err, user) => {
             if (err) {
-            	return res.send({
-            		'Status': 'failure',
-					"Error" : {
-						"Message": "Invalid access token"
-					}
-				}).status(403) 
-            }
 
+                new Exception(req, res).sendError(JSON.stringify({"status": 403, "error": "Forbidden"}))
+            	return;
+            }
             req.user = user;
             next();
         });
     } else {
-        res.send({
-        	'Status': 'failure',
-			"Error" : {
-				"Message": "Unauthorized"
-			}
-		}).status(401)
+        new Exception(req, res).sendError(JSON.stringify({"status": 401, "error": "Unauthorized"}))
     }
 };
 
