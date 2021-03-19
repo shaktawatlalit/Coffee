@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'); 
 mongoose.Promise = global.Promise; 
-const database_url = "mongodb://localhost:27017/conversation_data"
+const database_url = "mongodb://localhost:27017/coffee_data"
 
 mongoose.connect(database_url, {
     useNewUrlParser: true,
