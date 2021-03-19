@@ -11,16 +11,16 @@ const coffee = require('./routes/v1/coffee.route.js');
 const promocode = require('./routes/v1/promocode.route.js');
 const orders = require('./routes/v1/orders.route.js');
 
-var cluster = require('cluster');
+const cluster = require('cluster');
 
-var workers = process.env.WORKERS || 1 || require('os').cpus().length;
+const workers = process.env.WORKERS || require('os').cpus().length;
 
 if (cluster.isMaster) {
 
   console.log('start cluster with %s workers', workers);
 
-  for (var i = 0; i < workers; ++i) {
-    var worker = cluster.fork().process;
+  for (let i = 0; i < workers; ++i) {
+    const worker = cluster.fork().process;
     console.log('worker %s started.', worker.pid);
   }
 

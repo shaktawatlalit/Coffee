@@ -72,14 +72,58 @@ const recommendCoffee = async(req, res) => {
 		if (!userData) {
 			throw new Error(JSON.stringify({ "status": 404, "error": "User does not found"}))
 		}
-		const orderedCoffeeItem = await orderModel.find({
-			userId: userId
-		}, {'coffeeId': 1, 'name': 1, 'coffeeType': 1, 'size': 1}).sort({'createdAt': -1}).limit(3);
-		if (orderedCoffeeItem) {
+		
+		const query = [
+		    {
+	    		$match : {
+	    			userId : userId
+	    		}
+	    	}, {
+				"$group": {
+					"_id": {
+						"coffeeId": { "$toObjectId": "$coffeeId" }
+					},
+					"totalOrder": { "$sum": 1 }
+				}
+			}, {
+					$sort :{
+						totalOrder : -1
+					} 
+			}, { 
+					$limit : 5 
+			}, { 
+				"$lookup": {
+					"from": "coffees",
+					"localField": "_id.coffeeId",
+					"foreignField": "_id",
+					"as": "productObjects"
+				}
+			}, {
+				$unwind: "$productObjects"
+			}, {
+				$project: {
+					"_id": "$productObjects._id",
+					"name": "$productObjects.name",
+					"size": "$productObjects.name",
+					"price": "$productObjects.price" ,
+					"coffeeType": "$productObjects.coffeeType"						
+				}
+			}
+		]
+	
+	    const orderedCoffeeItem = await orderModel.aggregate(query)
+		if (orderedCoffeeItem.length) {
 			new Response(req, res).sendResponse(200, {
 				"Recommended Coffee Item": orderedCoffeeItem
 			})
 			return;
+		} else {
+			const popularItems = await orderModel.aggregate(query.slice(1,))
+			new Response(req, res).sendResponse(200, {
+				"Recommended Coffee Item": popularItems
+			})
+			return;
+			
 		}
 	} catch (err) {
 		new Exception(req, res).sendError(err.message)
